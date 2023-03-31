@@ -23,3 +23,34 @@ features:
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 
+# SVG Belt
+
+<script setup>
+import { SVGBelt, getStripedBelt } from 'vue-svg-belt'
+
+</script>
+
+<SVGBelt
+        :belt-props="
+          getStripedBelt(
+            'USA Belt',
+            'Red',
+            'White',
+            'Blue',
+            'Black',
+            true,
+            'White',
+            'Black',
+            false,
+            '',
+            '',
+            '',
+            0,
+            'Right',
+            'USA Striped Belt',
+            'USA Striped Belt no Stripes',
+            '',
+            0
+          )
+        "
+      />
