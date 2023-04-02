@@ -7,11 +7,9 @@ layout: home
 # SVG Belt
 
   <SVGBelt :belt-props="belt" />
-  <div class="grid grid-cols-3 gap-4 items-center">
-    <color-input v-model="color1" format="hex object" position="top right" />
-    <color-input v-model="color2" format="hex object" position="top right"/>
-    <color-input v-model="color3" format="hex object" position="top right"/>
-  </div>
+  <color-input v-model="color1" format="hex object" position="bottom right" disable-alpha disable-text-inputs/>
+  <color-input v-model="color2" format="hex object" position="bottom right" disable-alpha disable-text-inputs/>
+  <color-input v-model="color3" format="hex object" position="bottom right" disable-alpha disable-text-inputs/>
 </div>
 
 <script setup>
@@ -40,9 +38,9 @@ const belt = ref(getStripedBelt(
   0
 ));
 
-const color1 = ref('#ff0000');
-const color2 = ref('#ff0000');
-const color3 = ref('#ff0000');
+const color1 = ref('#FF0000');
+const color2 = ref('#FFFFFF');
+const color3 = ref('#0000FF');
 
 const updateBelt = () => {
   console.log(color1.value, color2.value, color3.value);
