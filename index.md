@@ -15,8 +15,8 @@ hero:
       link: /api-examples
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Color 1 
+    details: <color-input v-model="color" format="hex object" /> 
   - title: Feature B
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - title: Feature C
@@ -26,31 +26,56 @@ features:
 # SVG Belt
 
 <script setup>
-import { SVGBelt, getStripedBelt } from 'vue-svg-belt'
+import { SVGBelt, getStripedBelt, getBelt } from 'vue-svg-belt'
+import ColorInput from 'vue-color-input'
+import { ref, watch } from 'vue'
 
+const color = ref('#ff0000')
+const belt = ref(getStripedBelt(
+  'USA Belt',
+  'Red',
+  'White',
+  'Blue',
+  'Black',
+  true,
+  'White',
+  'Black',
+  false,
+  '',
+  '',
+  '',
+  0,
+  'Right',
+  'USA Striped Belt',
+  'USA Striped Belt no Stripes',
+  '',
+  0
+))
+watch (color, async (oldVar, newVar) => {
+console.log(newVar);
+belt.value = getStripedBelt(
+  'USA Belt',
+  newVar,
+  'Purple',
+  'Blue',
+  'Black',
+  true,
+  'White',
+  'Black',
+  false,
+  '',
+  '',
+  '',
+  0,
+  'Right',
+  'USA Striped Belt',
+  'USA Striped Belt no Stripes',
+  '',
+  0
+)
+});
 </script>
-
+<color-input v-model="color" format="hex object" />
 <SVGBelt
-        :belt-props="
-          getStripedBelt(
-            'USA Belt',
-            'Red',
-            'White',
-            'Blue',
-            'Black',
-            true,
-            'White',
-            'Black',
-            false,
-            '',
-            '',
-            '',
-            0,
-            'Right',
-            'USA Striped Belt',
-            'USA Striped Belt no Stripes',
-            '',
-            0
-          )
-        "
+        :belt-props="belt"
       />
