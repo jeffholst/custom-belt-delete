@@ -6,21 +6,21 @@ layout: home
 <main> <!-- markdownlint-disable-line MD041 -->
   <SVGBelt :belt-props="belt" />
   <div>
-     <input type="color" v-model="color1" />
-     <input type="color" v-model="color2" />
-     <input type="color" v-model="color3" />
+     <input class="colorSwatch" type="color" v-model="color1" />
+     <input class="colorSwatch" type="color" v-model="color2" />
+     <input class="colorSwatch" type="color" v-model="color3" />
   </div>
-  <div>
-    <button class="button">Solid</button>
-    <button class="button">Striped</button>
-    <button class="button">Coral</button>
-    <button class="button">Split</button>
-    <button class="button">Random</button>
+  <div style="padding-top: 40px;">
+    <ul style="list-style: none; display: inline;">
+       <li v-for="(button, index) in beltType" style="display: inline;">
+         <button @click="pickBelt(button)" class="button">{{ button }}</button>
+       </li>
+    </ul>
   </div>
 </main>
 
 <script setup>
-import { SVGBelt, getStripedBelt, getBelt } from 'vue-svg-belt'
+import { SVGBelt, getStripedBelt, getBelt, beltType } from 'vue-svg-belt'
 import ColorInput from 'vue-color-input'
 import { ref, watch } from 'vue'
 
@@ -94,6 +94,23 @@ watch (color2, () => {
 watch (color3, () => {
   updateBelt();
 });
+
+const pickBelt = (bType) => {
+  switch (bType) {
+    case "Solid":
+       break;
+    case "Striped":
+       break;
+    case "Coral":
+      break;
+    case "Split":
+      break;
+    case "Checkered":
+      break;
+    case "Crazy":
+      break;
+  }
+}
 </script>
 
 <style scoped>
@@ -103,9 +120,9 @@ main {
 }
 
 .button {
-   background-color: #4CAF50;
+   background-color: transparent;
    border: none;
-   color: white;
+   color: #3c3c43;
    padding: 15px 32px;
    text-align: center;
    text-decoration: none;
@@ -114,5 +131,23 @@ main {
    margin: 4px 2px;
    cursor: pointer;
    border-radius: 8px;
+}
+
+.button:hover {
+  color: #10b981;
+}
+
+.dark .button {
+  color: #ffffff;
+}
+
+.dark .button:hover {
+  color: #10b981;
+}
+
+.colorSwatch {
+  width: 75px;
+  height: 75px;
+  cursor: pointer;
 }
 </style>
