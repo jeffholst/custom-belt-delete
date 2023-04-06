@@ -6,13 +6,28 @@ layout: home
 <main> <!-- markdownlint-disable-line MD041 -->
   <SVGBelt :belt-props="belt" />
   <div>
-     <input class="colorSwatch" type="color" v-model="color1" />
-     <input class="colorSwatch" type="color" v-model="color2" />
-     <input class="colorSwatch" type="color" v-model="color3" />
+     <input
+        v-if="colorCount > 0"
+        class="colorSwatch"
+        type="color"
+        v-model="color1"
+      />
+     <input
+        v-if="colorCount > 1"
+        class="colorSwatch"
+        type="color"
+        v-model="color2"
+     />
+     <input
+        v-if="colorCount > 2"
+        class="colorSwatch"
+        type="color"
+        v-model="color3"
+     />
   </div>
   <div style="padding-top: 40px;">
     <ul style="list-style: none; display: inline;">
-       <li v-for="(button, index) in beltType" style="display: inline;">
+       <li v-for="(button, index) in beltTypes" style="display: inline;">
          <button @click="pickBelt(button)" class="button">{{ button }}</button>
        </li>
     </ul>
@@ -20,68 +35,42 @@ layout: home
 </main>
 
 <script setup>
-import { SVGBelt, getStripedBelt, getBelt, beltType } from 'vue-svg-belt'
+import { SVGBelt, getPredefinedBelt, beltTypes } from 'vue-svg-belt'
 import ColorInput from 'vue-color-input'
 import { ref, watch } from 'vue'
-
-const belt = ref(getStripedBelt(
-  'USA Belt',
-  'Red',
-  'White',
-  'Blue',
-  'Black',
-  true,
-  'White',
-  'Black',
-  false,
-  '',
-  '',
-  '',
-  0,
-  'Right',
-  'USA Striped Belt',
-  'USA Striped Belt no Stripes',
-  '',
-  0
-));
 
 const color1 = ref('#FF0000');
 const color2 = ref('#FFFFFF');
 const color3 = ref('#0000FF');
-
-const selectedBelt = ref('1');
-const beltOptions = ref([
-  { text: 'Solid', value: '0' },
-  { text: 'Striped', value: '1' },
-  { text: 'Coral', value: '2' },
-  { text: 'Split', value: '3' },
-  { text: 'Checkered', value: '4' },
-  { text: 'Random', value: '5' }
-])
+const beltType = ref('Striped');
+const belt = ref(undefined);
+const colorCount = ref(3);
 
 const updateBelt = () => {
-  console.log(color1.value, color2.value, color3.value);
-  belt.value = getStripedBelt(
-    'USA Belt',
+  belt.value = getPredefinedBelt(
+    "Belt Name",
+    beltType.value,
     color1.value,
     color2.value,
     color3.value,
-    'Black',
+    "#000000",
     true,
-    'White',
-    'Black',
+    "#000000",
+    "#000000",
     false,
-    '',
-    '',
-    '',
+    "",
+    "",
+    "#FFFFFF",
     0,
-    'Right',
-    'USA Belt',
-    'USA Belt no Stripes',
-    '',
-    0
+    "Right",
+    "My Title",
+    "My Description",
+    "",
+    ""
   );
 };
+
+updateBelt();
 
 watch (color1, () => {
   updateBelt();
@@ -95,21 +84,25 @@ watch (color3, () => {
   updateBelt();
 });
 
-const pickBelt = (bType) => {
-  switch (bType) {
+const pickBelt = (newBeltType) => {
+  switch (newBeltType) {
     case "Solid":
-       break;
-    case "Striped":
-       break;
+      colorCount.value = 1;
+      break;
     case "Coral":
-      break;
     case "Split":
-      break;
     case "Checkered":
+      colorCount.value = 2;
+      break;
+    case "Striped":
+      colorCount.value = 3;
       break;
     case "Crazy":
+      colorCount.value = 0;
       break;
   }
+  beltType.value = newBeltType;
+  updateBelt();
 }
 </script>
 
