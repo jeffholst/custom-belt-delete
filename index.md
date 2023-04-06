@@ -28,7 +28,13 @@ layout: home
   <div style="padding-top: 40px;">
     <ul style="list-style: none; display: inline;">
        <li v-for="(button, index) in beltTypes" style="display: inline;">
-         <button @click="pickBelt(button)" class="button">{{ button }}</button>
+         <button
+            @click="pickBelt(button)"
+            class="button"
+            :class="{ neonText: button === beltType }"
+          >
+             {{ button }}
+          </button>
        </li>
     </ul>
   </div>
@@ -130,12 +136,38 @@ main {
   color: #10b981;
 }
 
+.neonText {
+  color: #10b981;
+  text-shadow:
+      0 0 7px #0fa,
+      0 0 10px #0fa,
+      0 0 21px #0fa,
+      0 0 42px #0fa,
+      0 0 82px #0fa,
+      0 0 92px #0fa,
+      0 0 102px #0fa,
+      0 0 151px #0fa;
+}
+
 .dark .button {
   color: #ffffff;
 }
 
 .dark .button:hover {
   color: #10b981;
+}
+
+.dark .neonText {
+  color: #FFFFFF;
+  text-shadow:
+      0 0 7px #fff,
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px #0fa,
+      0 0 82px #0fa,
+      0 0 92px #0fa,
+      0 0 102px #0fa,
+      0 0 151px #0fa;
 }
 
 .colorSwatch {
