@@ -76,7 +76,6 @@ import {
   ibjjfJSON,
   BeltSystem
 } from 'vue-svg-belt'
-import ColorInput from 'vue-color-input'
 import { ref, watch } from 'vue'
 
 const ibjjfSystem = new BeltSystem(ibjjfJSON);
