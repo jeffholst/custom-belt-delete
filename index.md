@@ -26,42 +26,44 @@ layout: home
      />
   </div>
   <div style="padding-top: 20px;">
-    <label v-for="group in beltGroups" :key="group.value" style="padding: 5px;">
-       <input
-          @change="beltGroupChanged(group.value)"
-          type="radio"
-          name="beltGroup"
+    <select
+       v-model="selectedBeltGroup"
+       @change="beltGroupChanged(selectedBeltGroup)"
+    >
+       <option
+          v-for="group in beltGroups"
           :value="group.value"
-          v-model="selectedBeltGroup"
-       />
-       <span>{{ group.name }}</span>
-    </label>
-  </div>
-  <div v-if="selectedBeltGroup === 0" style="padding-top: 20px;">
-    <ul style="list-style: none; display: inline;">
-       <li v-for="(belt, index) in ibjjfSystem.belts" style="display: inline;">
-         <button
-            @click="pickBeltIBJJF(belt)"
-            class="buttonSmall"
-            :class="{ neonText: belt.name === beltTypeIBJJF }"
-          >
-             {{ belt.name }}
-          </button>
-       </li>
-    </ul>
-  </div>
-  <div v-else-if="selectedBeltGroup === 1" style="padding-top: 20px;">
-    <ul style="list-style: none; display: inline;">
-       <li v-for="(button, index) in beltTypes" style="display: inline;">
-         <button
-            @click="pickBeltCustom(button)"
-            class="button"
-            :class="{ neonText: button === beltTypeCustom }"
-          >
-             {{ button }}
-          </button>
-       </li>
-    </ul>
+       >
+          {{ group.name }}
+       </option>
+    </select>
+    <select
+       v-if="selectedBeltGroup === 0"
+       v-model="beltTypeIBJJF"
+       style="margin-left: 10px;"
+       @change="pickBeltIBJJF(beltTypeIBJJF)"
+    >
+       <option
+          v-for="(belt, index) in ibjjfSystem.belts"
+          :key="index"
+          :value="belt.name"
+       >
+          {{ belt.name }}
+       </option>
+    </select>
+    <select
+       v-else-if="selectedBeltGroup === 1"
+       v-model="beltTypeCustom"
+       style="margin-left: 10px;"
+       @change="pickBeltCustom(beltTypeCustom)"
+    >
+       <option
+          v-for="(button, index) in beltTypes"
+          :value="button"
+       >
+          {{ button }}
+       </option>
+    </select>
   </div>
 </main>
 
@@ -80,9 +82,9 @@ import { ref, watch } from 'vue'
 const ibjjfSystem = new BeltSystem(ibjjfJSON);
 
 const beltGroups = [
-  { name: "IBJJF Belts", value: 0 },
-  { name: "Custom Belts", value: 1 },
-  { name: "Random Belts", value: 2}
+  { name: "IBJJF", value: 0 },
+  { name: "Custom", value: 1 },
+  { name: "Random", value: 2}
 ];
 const color1 = ref('#FF0000');
 const color2 = ref('#FFFFFF');
@@ -90,7 +92,7 @@ const color3 = ref('#0000FF');
 const beltTypeCustom = ref('Striped');
 const beltTypeIBJJF = ref('White');
 const belt = ref(undefined);
-const colorCount = ref(3);
+const colorCount = ref(0);
 const selectedBeltGroup = ref(0);
 
 const updateBeltCustom = () => {
@@ -117,8 +119,6 @@ const updateBeltCustom = () => {
   );
 };
 
-updateBeltCustom();
-
 watch (color1, () => {
   updateBeltCustom();
 });
@@ -131,9 +131,9 @@ watch (color3, () => {
   updateBeltCustom();
 });
 
-const pickBeltIBJJF = (newBelt) => {
-  beltTypeIBJJF.value = newBelt.name;
-  belt.value = ibjjfSystem.getBeltPropsByName(newBelt.name, newBelt.stripeCount);
+const pickBeltIBJJF = (beltName) => {
+  const newBelt = ibjjfSystem.getBeltPropsByName(beltName, undefined);
+  belt.value = newBelt;
   colorCount.value = 0;
 }
 
@@ -163,7 +163,9 @@ const setColorCount = (beltType) => {
 };
 
 const beltGroupChanged = (groupValue) => {
-  if (groupValue === 1) { // Custom Belts
+  if (groupValue === 0) { // IBJJF Belts
+     pickBeltIBJJF(beltTypeIBJJF.value);
+  } else if (groupValue === 1) { // Custom Belts
      pickBeltCustom(beltTypeCustom.value);
      updateBeltCustom();
   } else if (groupValue ===  2) { // Random Belts
@@ -179,6 +181,7 @@ const beltGroupChanged = (groupValue) => {
      );
   };
 };
+pickBeltIBJJF(beltTypeIBJJF.value);
 </script>
 
 <style scoped>
@@ -187,82 +190,42 @@ main {
   text-align: center;
 }
 
-.button {
-   background-color: transparent;
-   border: none;
-   color: #3c3c43;
-   padding: 15px 32px;
-   text-align: center;
-   text-decoration: none;
-   display: inline-block;
-   font-size: 16px;
-   margin: 4px 2px;
-   cursor: pointer;
-   border-radius: 8px;
+select {
+  /*Reset*/
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  /*Personalize*/
+  height: 2em;
+  padding: 0 4em 0 1em;
+  background: url(/caret-black.svg) no-repeat right 0.8em center/1.4em, linear-gradient(to left, rgba(0, 0, 0, 0.3) 3em, rgba(0, 0, 0, 0.2) 3em);
+  color: black;
+  border-radius: 0.25em;
+  box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  /*<option> colors*/
+  /*Remove focus outline*/
+  /*Remove IE arrow*/
 }
 
-.buttonSmall {
-   background-color: transparent;
-   border: none;
-   color: #3c3c43;
-   padding: 8px 16px;
-   text-align: center;
-   text-decoration: none;
-   display: inline-block;
-   font-size: 14px;
-   margin: 4px 2px;
-   cursor: pointer;
-   border-radius: 8px;
+.dark select {
+  background: url(/caret-white.svg) no-repeat right 0.8em center/1.4em, linear-gradient(to left, rgba(255, 255, 255, 0.3) 3em, rgba(255, 255, 255, 0.2) 3em);
+  color: white;
 }
 
-.button:hover {
-  color: #10b981;
+select option {
+  color: inherit;
+  background-color: #320a28;
+}
+select:focus {
+  outline: none;
 }
 
-.buttonSmall:hover {
-  color: #10b981;
-}
-
-.neonText {
-  color: #10b981;
-  text-shadow:
-      0 0 7px #0fa,
-      0 0 10px #0fa,
-      0 0 21px #0fa,
-      0 0 42px #0fa,
-      0 0 82px #0fa,
-      0 0 92px #0fa,
-      0 0 102px #0fa,
-      0 0 151px #0fa;
-}
-
-.dark .button {
-  color: #ffffff;
-}
-
-.dark .buttonSmall {
-   color: #FFFFFF;
-}
-
-.dark .button:not(.neonText):hover {
-  color: #10b981;
-}
-
-.dark .buttonSmall:not(.neonText):hover {
-  color: #10b981;
-}
-
-.dark .neonText {
-  color: #FFFFFF;
-  text-shadow:
-      0 0 7px #fff,
-      0 0 10px #fff,
-      0 0 21px #fff,
-      0 0 42px #fff,
-      0 0 82px #fff,
-      0 0 92px #fff,
-      0 0 102px #fff,
-      0 0 151px #fff;
+select::-ms-expand {
+  display: none;
 }
 
 .colorSwatch {
