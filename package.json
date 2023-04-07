@@ -11,7 +11,6 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "vue-color-input": "^1.0.6",
     "vue-svg-belt": "^0.1.3"
   }
 }
