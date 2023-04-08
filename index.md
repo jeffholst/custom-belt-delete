@@ -25,13 +25,13 @@ layout: home
         v-model="color3"
      />
   </div>
-  <form
-    style="padding-left: 20px; padding-top: 20px; display: flex; align-items: center; justify-content: center;">
-    <div class="flex">
-       <label for="beltGroup">Group</label>
+  <div class="controls">
+    <div class="control">
+       <label for="beltGroup">Type</label>
        <select
           id="beltGroup"
           v-model="selectedBeltGroup"
+          style="margin-left: 10px;"
           @change="beltGroupChanged(selectedBeltGroup)"
        >
           <option
@@ -44,9 +44,9 @@ layout: home
     </div>
     <div
        v-if="selectedBeltGroup === 0"
-       class="flex"
+       class="control"
     >
-       <label for="beltTypeIBJJF">Type</label>
+       <label for="beltTypeIBJJF">Belt</label>
        <select
           id="beltTypeIBJJF"
           v-model="beltTypeIBJJF"
@@ -64,9 +64,9 @@ layout: home
     </div>
     <div
        v-else-if="selectedBeltGroup === 1"
-       class="flex"
+       class="control"
     >
-       <label for="beltTypeCustom">Type</label>
+       <label for="beltTypeCustom">Belt</label>
        <select
           id="beltTypeCustom"
           v-model="beltTypeCustom"
@@ -81,15 +81,23 @@ layout: home
           </option>
        </select>
     </div>
-    <div class="flex">
+    <div class="control">
        <label for="stripeCount">Stripes</label>
-       <input
+       <select
           id="stripeCount"
-          type="text"
+          v-model="stripesSelected"
           style="margin-left: 10px;"
+          @change="updateStripeCount(stripesSelected)"
        >
+          <option
+             v-for="(stripe, index) in stripesAvailable"
+             :value="stripe"
+          >
+             {{ stripe }}
+          </option>
+       </select>
     </div>
-  </form>
+  </div>
 </main>
 
 <script setup>
@@ -102,7 +110,6 @@ import {
   BeltSystem
 } from 'vue-svg-belt'
 import { ref, watch } from 'vue'
-import pako from 'pako'
 
 const ibjjfSystem = new BeltSystem(ibjjfJSON);
 
@@ -119,6 +126,8 @@ const beltTypeIBJJF = ref('White');
 const belt = ref(undefined);
 const colorCount = ref(0);
 const selectedBeltGroup = ref(0);
+const stripesSelected = ref(0);
+const stripesAvailable = ref([]);
 
 const updateBeltCustom = () => {
   belt.value = getPredefinedBelt(
@@ -135,7 +144,7 @@ const updateBeltCustom = () => {
     "",
     "",
     "#FFFFFF",
-    0,
+    stripesSelected.value,
     "Right",
     "My Title",
     "My Description",
@@ -157,7 +166,8 @@ watch (color3, () => {
 });
 
 const pickBeltIBJJF = (beltName) => {
-  const newBelt = ibjjfSystem.getBeltPropsByName(beltName, undefined);
+  setStripeSelect();
+  const newBelt = ibjjfSystem.getBeltPropsByName(beltName, stripesSelected.value);
   belt.value = newBelt;
   colorCount.value = 0;
 }
@@ -187,7 +197,12 @@ const setColorCount = (beltType) => {
   }
 };
 
+const updateStripeCount = (stripeCount) => {
+  beltGroupChanged(selectedBeltGroup.value);
+};
+
 const beltGroupChanged = (groupValue) => {
+  setStripeSelect();
   if (groupValue === 0) { // IBJJF Belts
      pickBeltIBJJF(beltTypeIBJJF.value);
   } else if (groupValue === 1) { // Custom Belts
@@ -198,8 +213,8 @@ const beltGroupChanged = (groupValue) => {
      belt.value = getRandomBelt(
         true,
         false,
-        0,
-        undefined,
+        stripesSelected.value,
+        "Right",
         "transition: all 1.0s ease-in-out;",
         ["Solid", "Striped", "Coral", "Split", "Checkered", "Crazy"],
         "2000"
@@ -207,33 +222,45 @@ const beltGroupChanged = (groupValue) => {
   };
 };
 
-const params = new Proxy(new URLSearchParams(window.location.search), {
-  get: (searchParams, prop) => searchParams.get(prop),
-});
-// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-let value = params.belt; // "some_value"
-if (value) {
-  belt.value = JSON.parse(value);
-  console.log(belt.value);
-} else {
-   pickBeltIBJJF(beltTypeIBJJF.value);
-};
-
-const getURL = () => {
+const setStripeSelect = () => {
   switch (selectedBeltGroup.value) {
     case 0: // IBJJF
+      switch (beltTypeIBJJF.value) {
+        case "Black":
+          stripesAvailable.value = [0, 1, 2, 3, 4, 5];
+          break;
+        case "Red/Black":
+          stripesAvailable.value = [7];
+          stripesSelected.value = 7;
+          break;
+        case "Red/White":
+          stripesAvailable.value = [8];
+          stripesSelected.value = 8;
+          break;
+        case "Red":
+          stripesAvailable.value = [9, 10];
+          break;
+        default:
+          stripesAvailable.value = [0, 1, 2, 3 ,4];
+          break;
+      }
       break;
     case 1: // Custom
-      break;
     case 2: // Random
+      stripesAvailable.value = [0, 1, 2, 3 ,4, 5, 6, 7, 8, 9, 10];
       break;
   }
-  const params = new URLSearchParams();
-  params.set('belt', JSON.stringify(belt.value));
-  const url = `${window.location.href}?${params.toString()}`;
-  console.log(url);
-  window.location.href = url;
-} </script>
+  if (stripesSelected.value >
+      stripesAvailable.value[stripesAvailable.value.length - 1]) {
+     (stripesSelected.value = stripesAvailable.value[0]);
+  } else if (stripesSelected.value < stripesAvailable.value[0]) {
+     stripesSelected.value = stripesAvailable.value[0];
+  }
+};
+
+pickBeltIBJJF(beltTypeIBJJF.value);
+
+</script>
 
 <style scoped>
 main {
@@ -241,9 +268,42 @@ main {
   text-align: center;
 }
 
-.flex {
-  display: flex;
-  flex-direction: column;
+.control {
+  background-color: #F6F6F7;
+  color: white;
+  padding: 1rem;
+  height: 4rem;
+  border-radius: 0.5rem;
+}
+
+.dark .control {
+  background-color: #434245;
+}
+
+.controls {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-gap: 1rem;
+  padding-top: 20px;
+}
+
+/*Screen larger than 600px? 2 column*/
+@media (min-width: 600px) {
+  .controls { grid-template-columns: repeat(2, 1fr); }
+}
+
+/*Screen larger than 900px? 3 columns*/
+@media (min-width: 900px) {
+  .controls { grid-template-columns: repeat(3, 1fr); }
+}
+
+label {
+  color: gray;
+}
+
+.dark label {
+  color: #FFFFFF;
 }
 
 select {
