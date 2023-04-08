@@ -25,46 +25,71 @@ layout: home
         v-model="color3"
      />
   </div>
-  <div style="padding-top: 20px;">
-    <select
-       v-model="selectedBeltGroup"
-       @change="beltGroupChanged(selectedBeltGroup)"
-    >
-       <option
-          v-for="group in beltGroups"
-          :value="group.value"
+  <form
+    style="padding-left: 20px; padding-top: 20px; display: flex; align-items: center; justify-content: center;">
+    <div class="flex">
+       <label for="beltGroup">Group</label>
+       <select
+          id="beltGroup"
+          v-model="selectedBeltGroup"
+          @change="beltGroupChanged(selectedBeltGroup)"
        >
-          {{ group.name }}
-       </option>
-    </select>
-    <select
+          <option
+             v-for="group in beltGroups"
+             :value="group.value"
+          >
+             {{ group.name }}
+          </option>
+       </select>
+    </div>
+    <div
        v-if="selectedBeltGroup === 0"
-       v-model="beltTypeIBJJF"
-       style="margin-left: 10px;"
-       @change="pickBeltIBJJF(beltTypeIBJJF)"
+       class="flex"
     >
-       <option
-          v-for="(belt, index) in ibjjfSystem.belts"
-          :key="index"
-          :value="belt.name"
+       <label for="beltTypeIBJJF">Type</label>
+       <select
+          id="beltTypeIBJJF"
+          v-model="beltTypeIBJJF"
+          style="margin-left: 10px;"
+          @change="pickBeltIBJJF(beltTypeIBJJF)"
        >
-          {{ belt.name }}
-       </option>
-    </select>
-    <select
+          <option
+             v-for="(belt, index) in ibjjfSystem.belts"
+             :key="index"
+             :value="belt.name"
+          >
+             {{ belt.name }}
+          </option>
+       </select>
+    </div>
+    <div
        v-else-if="selectedBeltGroup === 1"
-       v-model="beltTypeCustom"
-       style="margin-left: 10px;"
-       @change="pickBeltCustom(beltTypeCustom)"
+       class="flex"
     >
-       <option
-          v-for="(button, index) in beltTypes"
-          :value="button"
+       <label for="beltTypeCustom">Type</label>
+       <select
+          id="beltTypeCustom"
+          v-model="beltTypeCustom"
+          style="margin-left: 10px;"
+          @change="pickBeltCustom(beltTypeCustom)"
        >
-          {{ button }}
-       </option>
-    </select>
-  </div>
+          <option
+             v-for="(button, index) in beltTypes"
+             :value="button"
+          >
+             {{ button }}
+          </option>
+       </select>
+    </div>
+    <div class="flex">
+       <label for="stripeCount">Stripes</label>
+       <input
+          id="stripeCount"
+          type="text"
+          style="margin-left: 10px;"
+       >
+    </div>
+  </form>
 </main>
 
 <script setup>
@@ -77,6 +102,7 @@ import {
   BeltSystem
 } from 'vue-svg-belt'
 import { ref, watch } from 'vue'
+import pako from 'pako'
 
 const ibjjfSystem = new BeltSystem(ibjjfJSON);
 
@@ -180,13 +206,44 @@ const beltGroupChanged = (groupValue) => {
      );
   };
 };
-pickBeltIBJJF(beltTypeIBJJF.value);
-</script>
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+let value = params.belt; // "some_value"
+if (value) {
+  belt.value = JSON.parse(value);
+  console.log(belt.value);
+} else {
+   pickBeltIBJJF(beltTypeIBJJF.value);
+};
+
+const getURL = () => {
+  switch (selectedBeltGroup.value) {
+    case 0: // IBJJF
+      break;
+    case 1: // Custom
+      break;
+    case 2: // Random
+      break;
+  }
+  const params = new URLSearchParams();
+  params.set('belt', JSON.stringify(belt.value));
+  const url = `${window.location.href}?${params.toString()}`;
+  console.log(url);
+  window.location.href = url;
+} </script>
 
 <style scoped>
 main {
   padding: 20px;
   text-align: center;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
 }
 
 select {
@@ -200,7 +257,10 @@ select {
   /*Personalize*/
   height: 2em;
   padding: 0 4em 0 1em;
-  background: url(/caret-black.svg) no-repeat right 0.8em center/1.4em, linear-gradient(to left, rgba(0, 0, 0, 0.3) 3em, rgba(0, 0, 0, 0.2) 3em);
+  background: url(/caret-black.svg) no-repeat right 0.8em center/1.4em,
+     linear-gradient(to left,
+     rgba(0, 0, 0, 0.3) 3em,
+     rgba(0, 0, 0, 0.2) 3em);
   color: black;
   border-radius: 0.25em;
   box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
@@ -211,7 +271,9 @@ select {
 }
 
 .dark select {
-  background: url(/caret-white.svg) no-repeat right 0.8em center/1.4em, linear-gradient(to left, rgba(255, 255, 255, 0.3) 3em, rgba(255, 255, 255, 0.2) 3em);
+  background: url(/caret-white.svg) no-repeat right 0.8em center/1.4em,
+     linear-gradient(to left, rgba(255, 255, 255, 0.3) 3em,
+     rgba(255, 255, 255, 0.2) 3em);
   color: white;
 }
 
@@ -219,6 +281,7 @@ select option {
   color: inherit;
   background-color: #320a28;
 }
+
 select:focus {
   outline: none;
 }
