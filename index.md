@@ -240,7 +240,7 @@ const setStripeSelect = () => {
     case 0: // IBJJF
       switch (beltTypeIBJJF.value) {
         case "Black":
-          stripesAvailable.value = [0, 1, 2, 3, 4, 5];
+          stripesAvailable.value = [0, 1, 2, 3, 4, 5, 6];
           break;
         case "Red/Black":
           stripesAvailable.value = [7];
