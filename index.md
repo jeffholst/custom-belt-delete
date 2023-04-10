@@ -236,7 +236,6 @@ const beltGroupChanged = (groupValue) => {
 };
 
 const setStripeSelect = () => {
-    debugger
   switch (selectedBeltGroup.value) {
     case 0: // IBJJF
       const myBelt = ibjjfSystem.getBeltByName(beltTypeIBJJF.value);
@@ -261,8 +260,9 @@ const setStripeSelect = () => {
 
 const copyURLToClipboard = () => {
   if (typeof window !== "undefined") {
+    const belt = ibjjfSystem.getBeltByName(beltTypeIBJJF.value);
     let url =  window.location.origin + window.location.pathname;
-    const parm =  `{"type": 0, "belt": "${beltTypeIBJJF.value}", "stripes": ${stripesSelected.value}}`;
+    const parm = `0|${belt.id}|${stripesSelected.value}`;
     url = `${url}?belt=${encodeURIComponent(parm)}`;
     copyToClipboard(url);
   }
@@ -286,9 +286,13 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 let value = params.belt; // "some_value"
 
 if (value) {
-   const obj = JSON.parse(value);
-   beltTypeIBJJF.value = obj.belt;
-   stripesSelected.value = obj.stripes;
+   const parms = value.split("|");
+   if (parms && parms.length === 3 && parms[0] === "0") {
+      selectedBeltGroup.value = 0;
+      const belt = ibjjfSystem.getBeltById(Number(parms[1]));
+      beltTypeIBJJF.value = belt.name;
+      stripesSelected.value = parseInt(parms[2]);
+   }
 }
 
 pickBeltIBJJF(beltTypeIBJJF.value);
