@@ -1,7 +1,7 @@
 {
   "name": "svg-belt",
   "author": "Jeff Holst",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "devDependencies": {
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.10.0",

@@ -98,7 +98,7 @@ layout: home
        </select>
     </div>
   </div>
-  <div @click="copyURLToClipboard" class="copyURL">
+  <div v-if="allowCopyToClipboard" @click="copyURLToClipboard" class="copyURL">
     <span >Copy URL to Clipboard</span>
        <svg xmlns="http://www.w3.org/2000/svg" class="svgIcon"
   viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
@@ -122,7 +122,7 @@ import {
   ibjjfJSON,
   BeltSystem
 } from 'vue-svg-belt'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const ibjjfSystem = new BeltSystem(ibjjfJSON);
 
@@ -143,7 +143,9 @@ const stripesSelected = ref(0);
 const stripesAvailable = ref([]);
 
 const updateBeltCustom = () => {
+
   belt.value = getPredefinedBelt(
+    0,
     "Belt Name",
     beltTypeCustom.value,
     color1.value,
@@ -159,6 +161,8 @@ const updateBeltCustom = () => {
     "#FFFFFF",
     stripesSelected.value,
     "Right",
+    0,
+    10,
     "My Title",
     "My Description",
     "",
@@ -258,11 +262,25 @@ const setStripeSelect = () => {
   }
 };
 
+const allowCopyToClipboard = computed(() => {
+  if (selectedBeltGroup.value === 0) {
+    return true;
+  } else if (selectedBeltGroup.value === 1 && beltTypeCustom.value !== "Crazy") {
+    return true;
+  }
+  return false;
+});
+
 const copyURLToClipboard = () => {
   if (typeof window !== "undefined") {
-    const belt = ibjjfSystem.getBeltByName(beltTypeIBJJF.value);
     let url =  window.location.origin + window.location.pathname;
-    const parm = `0|${belt.id}|${stripesSelected.value}`;
+    let parm = "";
+    if ( selectedBeltGroup.value === 0) {
+       const belt = ibjjfSystem.getBeltByName(beltTypeIBJJF.value);
+       parm = `0|${belt.id}|${stripesSelected.value}`;
+    } else if ( selectedBeltGroup.value === 1) {
+       parm = `1|${beltTypeCustom.value}|${stripesSelected.value}|${color1.value}|${color2.value}|${color3.value}`;
+    }
     url = `${url}?belt=${encodeURIComponent(parm)}`;
     copyToClipboard(url);
   }
@@ -292,10 +310,18 @@ if (value) {
       const belt = ibjjfSystem.getBeltById(Number(parms[1]));
       beltTypeIBJJF.value = belt.name;
       stripesSelected.value = parseInt(parms[2]);
+   } else if (parms && parms.length === 6 && parms[0] === "1") {
+      selectedBeltGroup.value = 1;
+      beltTypeCustom.value = parms[1];
+      stripesSelected.value = parseInt(parms[2]);
+      color1.value = parms[3];
+      color2.value = parms[4];
+      color3.value = parms[5];
+      pickBeltCustom(beltTypeCustom.value);
    }
+} else {
+  pickBeltIBJJF(beltTypeIBJJF.value);
 }
-
-pickBeltIBJJF(beltTypeIBJJF.value);
 
 </script>
 
