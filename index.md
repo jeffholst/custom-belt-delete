@@ -318,6 +318,7 @@ if (value) {
       color1.value = parms[3];
       color2.value = parms[4];
       color3.value = parms[5];
+      setStripeSelect();
       pickBeltCustom(beltTypeCustom.value);
    }
 } else {
