@@ -310,6 +310,7 @@ if (value) {
       const belt = ibjjfSystem.getBeltById(Number(parms[1]));
       beltTypeIBJJF.value = belt.name;
       stripesSelected.value = parseInt(parms[2]);
+      pickBeltIBJJF(beltTypeIBJJF.value);
    } else if (parms && parms.length === 6 && parms[0] === "1") {
       selectedBeltGroup.value = 1;
       beltTypeCustom.value = parms[1];
