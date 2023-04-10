@@ -236,27 +236,15 @@ const beltGroupChanged = (groupValue) => {
 };
 
 const setStripeSelect = () => {
+    debugger
   switch (selectedBeltGroup.value) {
     case 0: // IBJJF
-      switch (beltTypeIBJJF.value) {
-        case "Black":
-          stripesAvailable.value = [0, 1, 2, 3, 4, 5];
-          break;
-        case "Red/Black":
-          stripesAvailable.value = [7];
-          stripesSelected.value = 7;
-          break;
-        case "Red/White":
-          stripesAvailable.value = [8];
-          stripesSelected.value = 8;
-          break;
-        case "Red":
-          stripesAvailable.value = [9, 10];
-          break;
-        default:
-          stripesAvailable.value = [0, 1, 2, 3 ,4];
-          break;
+      const myBelt = ibjjfSystem.getBeltByName(beltTypeIBJJF.value);
+      const ary = [];
+      for (let i = myBelt.minStripes; i <= myBelt.maxStripes; i++) {
+        ary.push(i);
       }
+      stripesAvailable.value = ary;
       break;
     case 1: // Custom
     case 2: // Random
@@ -297,7 +285,6 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
 let value = params.belt; // "some_value"
 
-debugger;
 if (value) {
    const obj = JSON.parse(value);
    beltTypeIBJJF.value = obj.belt;
